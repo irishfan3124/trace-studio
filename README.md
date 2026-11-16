@@ -33,8 +33,6 @@ Open http://localhost:8000 on the same computer. To use a phone camera remotely,
 
 This is a screen overlay, not a physical light projector or world-anchored AR. Keep the phone and paper still. Fullscreen and wake-lock support depend on the browser.
 
-## Source and checks
-
 ## Publish updates to GitHub Pages
 
 Pages serves the root of the `gh-pages` branch. After committing changes on `main`, publish the `dist/` folder with:
