@@ -2,9 +2,9 @@
 
 A mobile-friendly camera tracing webapp for iPhone and Android. Upload an image, place it over the live rear-camera view, and trace on paper while looking at your screen.
 
-[Open the live app](https://trace-studio-mobile.irishfan3124.chatgpt.site)
+[Open the live app](https://irishfan3124.github.io/trace-studio/)
 
-The current hosted app is private and may require its owner's sign-in.
+The app is publicly hosted on GitHub Pages over HTTPS.
 
 ## Features
 
@@ -32,6 +32,21 @@ Open http://localhost:8000 on the same computer. To use a phone camera remotely,
 4. Adjust the overlay and lock its position, then trace while looking at the screen.
 
 This is a screen overlay, not a physical light projector or world-anchored AR. Keep the phone and paper still. Fullscreen and wake-lock support depend on the browser.
+
+## Source and checks
+
+## Publish updates to GitHub Pages
+
+Pages serves the root of the `gh-pages` branch. After committing changes on `main`, publish the `dist/` folder with:
+
+```sh
+git push github main
+git subtree split --prefix dist -b pages-update
+git push github pages-update:gh-pages
+git branch -D pages-update
+```
+
+If you cloned the repository from GitHub, use `origin` instead of `github` in these commands.
 
 ## Source and checks
 
