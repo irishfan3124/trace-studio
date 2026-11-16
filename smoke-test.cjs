@@ -1,0 +1,14 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const elements={};const el=id=>elements[id]??={id,value:({scale:100,rotation:0,opacity:70,detail:50,color:'#354c40'})[id]??'',style:{},dataset:{},classList:{toggle(){},add(){},remove(){}},setAttribute(k,v){this[k]=String(v)},getAttribute(k){return this[k]},addEventListener(){},getContext(){return {}},click(){this.onclick()},showModal(){this.open=true},close(){this.open=false}};
+const sandbox={document:{getElementById:el,querySelectorAll:()=>[],addEventListener(){}},window:{addEventListener(){}},navigator:{},Image:class{},URL,console,setTimeout,clearTimeout};vm.createContext(sandbox);vm.runInContext(fs.readFileSync('dist/app.js','utf8'),sandbox);
+assert(el('artLayer').style.transform.includes('scale(1,1)'));
+el('scale').value=180;el('scale').oninput();assert(el('artLayer').style.transform.includes('scale(1.8,1.8)'));
+el('flip').onclick();assert(el('artLayer').style.transform.includes('scale(-1.8,1.8)'));
+el('lock').onclick();assert(el('scale').disabled);assert(el('alignment').textContent.includes('locked'));
+el('lock').onclick();assert(!el('scale').disabled);
+el('reset').onclick();assert(el('scale').value===100);
+el('gridButton').onclick();assert(el('grid').style.display==='block');el('gridButton').onclick();assert(el('grid').style.display==='none');
+el('hide').onclick();assert(el('art').style.visibility==='hidden');el('hide').onclick();assert(el('art').style.visibility==='visible');
+el('photo').onclick();assert(el('detailControl').style.display==='none');el('outline').onclick();assert(el('detailControl').style.display==='block');
+el('help').onclick();assert(el('helpDialog').open);el('gotIt').onclick();assert(!el('helpDialog').open);
+el('startCamera').onclick().then(()=>{assert(el('toast').textContent.includes('HTTPS'));console.log('PASS: transforms, flip, lock/unlock, reset, grid, visibility, style, help, unavailable-camera handling');process.exit(0)});
