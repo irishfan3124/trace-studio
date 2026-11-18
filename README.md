@@ -12,7 +12,7 @@ The app is publicly hosted on GitHub Pages over HTTPS.
 - Original-image and outline modes, opacity, detail, and line color controls.
 - Drag and pinch positioning, size, rotation, flip, and alignment grid.
 - Lockable artwork, camera permission handling, and optional screen wake lock.
-- Responsive interface and a built-in botanical study.
+- Searchable library of 72 original line drawings across eight categories.
 
 ## Run locally
 
@@ -28,7 +28,7 @@ Open http://localhost:8000 on the same computer. To use a phone camera remotely,
 
 1. Open the live HTTPS page in Safari on iPhone or Chrome on Android.
 2. Secure the phone on a stand above paper, rear camera facing down.
-3. Upload artwork and enable camera permission.
+3. Choose **Browse drawings** or upload artwork, then enable camera permission.
 4. Adjust the overlay and lock its position, then trace while looking at the screen.
 
 This is a screen overlay, not a physical light projector or world-anchored AR. Keep the phone and paper still. Fullscreen and wake-lock support depend on the browser.
@@ -48,7 +48,7 @@ If you cloned the repository from GitHub, use `origin` instead of `github` in th
 
 ## Source and checks
 
-`dist/index.html`, `dist/style.css`, and `dist/app.js` are the complete app. `.openai/hosting.json` identifies the existing Sites deployment. Google Fonts are loaded for typography; artwork processing stays in the browser.
+The complete app is in `dist/`, including the line drawing catalog in `dist/drawings.js`. `.openai/hosting.json` identifies the existing Sites deployment. Google Fonts are loaded for typography, and artwork processing stays in the browser.
 
 ```sh
 node --check dist/app.js
