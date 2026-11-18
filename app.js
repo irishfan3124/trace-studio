@@ -1,14 +1,54 @@
 const $=id=>document.getElementById(id), art=$('art'), ctx=art.getContext('2d',{willReadFrequently:true});
-let source=null, mode='outline', lineColor='#354c40', locked=false, flipped=false, hidden=false, dx=0,dy=0, stream=null,wake=null, toastTimer, loadSequence=0;
+let source=null, sourceIsDrawing=false, mode='outline', lineColor='#354c40', locked=false, flipped=false, hidden=false, dx=0,dy=0, stream=null,wake=null, toastTimer, loadSequence=0;
 const botanical=`<svg xmlns="http://www.w3.org/2000/svg" width="500" height="650" viewBox="0 0 500 650"><g fill="none" stroke="#354c40" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"><path d="M244 608 Q226 505 265 394 Q287 302 242 192 Q224 148 239 68 M254 451 Q192 391 153 317 M262 389 Q340 335 353 242 M250 526 Q329 477 355 413 M260 331 Q199 278 165 203 M252 233 Q310 189 322 127"/><path d="M239 137 Q187 102 223 37 Q264 77 239 137Z M246 191 Q181 179 164 114 Q232 116 246 191Z M255 237 Q296 219 322 127 Q255 143 255 237Z M264 312 Q194 291 165 203 Q237 223 264 312Z M267 362 Q314 301 353 242 Q374 328 267 362Z M255 432 Q184 410 153 317 Q225 341 255 432Z M248 493 Q303 465 355 413 Q352 492 248 493Z M245 550 Q176 522 150 451 Q227 467 245 550Z M246 578 Q291 532 328 523 Q327 574 246 578Z"/><path d="M239 137 L223 65 M246 191 L182 132 M255 237 L307 156 M264 312 L185 229 M267 362 L344 271 M255 432 L174 345 M248 493 L333 437 M245 550 L172 474 M246 578 L312 542"/></g></svg>`;
 function notify(text){$('toast').textContent=text;$('toast').style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').style.display='none',5500)}
 function transform(){const scale=+$('scale').value/100, rotation=+$('rotation').value;$('artLayer').style.transform=`translate(calc(-50% + ${dx}px),calc(-50% + ${dy}px)) rotate(${rotation}deg) scale(${flipped?-scale:scale},${scale})`;$('scaleValue').value=Math.round(scale*100)+'%';$('rotationValue').value=rotation+'°'}
-function render(){if(!source)return;const size=Math.min(1,1100/Math.max(source.width,source.height));art.width=Math.round(source.width*size);art.height=Math.round(source.height*size);ctx.clearRect(0,0,art.width,art.height);ctx.drawImage(source,0,0,art.width,art.height);if(mode==='photo')return;const image=ctx.getImageData(0,0,art.width,art.height),d=image.data,w=art.width,h=art.height,gray=new Float32Array(w*h);for(let i=0;i<gray.length;i++){const a=d[i*4+3]/255;gray[i]=(d[i*4]*.299+d[i*4+1]*.587+d[i*4+2]*.114)*a+255*(1-a)}const result=ctx.createImageData(w,h),out=result.data,rgb=lineColor.match(/\w\w/g).map(v=>parseInt(v,16));const threshold=120-(+$('detail').value);for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const i=y*w+x;const gx=-gray[i-w-1]+gray[i-w+1]-2*gray[i-1]+2*gray[i+1]-gray[i+w-1]+gray[i+w+1],gy=-gray[i-w-1]-2*gray[i-w]-gray[i-w+1]+gray[i+w-1]+2*gray[i+w]+gray[i+w+1],edge=Math.hypot(gx,gy);out[i*4]=rgb[0];out[i*4+1]=rgb[1];out[i*4+2]=rgb[2];out[i*4+3]=Math.min(255,Math.max(0,(edge-threshold)*2))}ctx.putImageData(result,0,0)}
+function render(){if(!source)return;const size=Math.min(1,1100/Math.max(source.width,source.height));art.width=Math.round(source.width*size);art.height=Math.round(source.height*size);ctx.clearRect(0,0,art.width,art.height);ctx.drawImage(source,0,0,art.width,art.height);if(mode==='photo')return;
+  if (sourceIsDrawing) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'source-in';
+    ctx.fillStyle = lineColor;
+    ctx.fillRect(0, 0, art.width, art.height);
+    ctx.restore();
+    return;
+  }
+  const image=ctx.getImageData(0,0,art.width,art.height),d=image.data,w=art.width,h=art.height,gray=new Float32Array(w*h);for(let i=0;i<gray.length;i++){const a=d[i*4+3]/255;gray[i]=(d[i*4]*.299+d[i*4+1]*.587+d[i*4+2]*.114)*a+255*(1-a)}const result=ctx.createImageData(w,h),out=result.data,rgb=lineColor.match(/\w\w/g).map(v=>parseInt(v,16));const threshold=120-(+$('detail').value);for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const i=y*w+x;const gx=-gray[i-w-1]+gray[i-w+1]-2*gray[i-1]+2*gray[i+1]-gray[i+w-1]+gray[i+w+1],gy=-gray[i-w-1]-2*gray[i-w]-gray[i-w+1]+gray[i+w-1]+2*gray[i+w]+gray[i+w+1],edge=Math.hypot(gx,gy);out[i*4]=rgb[0];out[i*4+1]=rgb[1];out[i*4+2]=rgb[2];out[i*4+3]=Math.min(255,Math.max(0,(edge-threshold)*2))}ctx.putImageData(result,0,0)}
 function reset(){dx=dy=0;flipped=false;$('flip').setAttribute('aria-pressed','false');$('scale').value=100;$('rotation').value=0;transform()}
-function loadImage(url,name,revoke=false){const seq=++loadSequence;const image=new Image();image.onload=()=>{if(seq===loadSequence){source=image;setLocked(false);reset();render();$('fileName').textContent=name}if(revoke)URL.revokeObjectURL(url)};image.onerror=()=>{if(revoke)URL.revokeObjectURL(url);notify('That image could not be opened. Try a JPG, PNG, or WEBP image.')};image.src=url}
-$('sample').onclick=()=>loadImage('data:image/svg+xml;charset=utf-8,'+encodeURIComponent(botanical),'Botanical study');$('sample').click();
+function setArtwork(image, name, isDrawing = false) {
+  source = image;
+  sourceIsDrawing = isDrawing;
+  setLocked(false);
+  reset();
+  updateDetailControl();
+  $('fileName').textContent = name;
+  render();
+}
+
+function useLibraryDrawing(drawing, name) {
+  ++loadSequence;
+  if (hidden) $('hide').click();
+  setArtwork(drawing, name, true);
+}
+
+function updateDetailControl() {
+  $('detailControl').style.display = mode === 'outline' && !sourceIsDrawing ? 'block' : 'none';
+}
+
+function loadImage(url, name, revoke = false) {
+  const sequence = ++loadSequence;
+  const image = new Image();
+  image.onload = () => {
+    if (sequence === loadSequence) setArtwork(image, name);
+    if (revoke) URL.revokeObjectURL(url);
+  };
+  image.onerror = () => {
+    if (revoke) URL.revokeObjectURL(url);
+    if (sequence === loadSequence) notify('That image could not be opened. Try a JPG, PNG, or WEBP image.');
+  };
+  image.src = url;
+}
 $('upload').onchange=e=>{const file=e.target.files[0];if(!file)return;if(file.size>20*1024*1024){notify('Please choose an image smaller than 20 MB.');e.target.value='';return}loadImage(URL.createObjectURL(file),file.name,true);e.target.value=''};
-for(const name of ['outline','photo'])$(name).onclick=()=>{mode=name;for(const n of ['outline','photo']){$(n).classList.toggle('selected',n===mode);$(n).setAttribute('aria-pressed',n===mode)}$('detailControl').style.display=mode==='outline'?'block':'none';render()};
+for(const name of ['outline','photo'])$(name).onclick=()=>{mode=name;for(const n of ['outline','photo']){$(n).classList.toggle('selected',n===mode);$(n).setAttribute('aria-pressed',n===mode)}updateDetailControl();render()};
 $('opacity').oninput=()=>{art.style.opacity=+$('opacity').value/100;$('opacityValue').value=$('opacity').value+'%'};
 $('detail').oninput=()=>{$('detailValue').value=$('detail').value+'%';render()};
 function color(value){lineColor=value;$('color').value=value;document.querySelectorAll('[data-color]').forEach(b=>b.classList.toggle('active',b.dataset.color===value));render()}
@@ -29,3 +69,5 @@ $('viewer').addEventListener('pointermove',e=>{if(locked||!pointers.has(e.pointe
 for(const event of ['pointerup','pointercancel','lostpointercapture'])$('viewer').addEventListener(event,e=>{pointers.delete(e.pointerId);beginGesture()});
 $('expand').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else if($('viewer').requestFullscreen)await $('viewer').requestFullscreen();else notify('Full screen is unavailable here. Add this page to your home screen for more space.')}catch{notify('Full screen is unavailable in this browser.')}};
 $('help').onclick=()=>$('helpDialog').showModal();$('closeHelp').onclick=$('gotIt').onclick=()=>$('helpDialog').close();transform();
+
+loadImage('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(botanical), 'Botanical study');
