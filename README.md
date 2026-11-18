@@ -12,7 +12,7 @@ The app is publicly hosted on GitHub Pages over HTTPS.
 - Original-image and outline modes, opacity, detail, and line color controls.
 - Drag and pinch positioning, size, rotation, flip, and alignment grid.
 - Lockable artwork, camera permission handling, and optional screen wake lock.
-- Searchable library of 144 original line drawings across eight categories.
+- Searchable library of 162 original line drawings across nine categories, including Spooky & Horror.
 
 ## Run locally
 
