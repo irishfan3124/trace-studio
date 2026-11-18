@@ -1,0 +1,100 @@
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 2vw, 28px);
+}
+
+.site-nav a, .site-nav button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 3px;
+  color: inherit;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.site-nav a[aria-current="page"] { text-decoration-thickness: 2px; }
+.site-footer a { color: inherit; font-size: 12px; }
+
+.reading {
+  max-width: 1120px;
+  padding-top: clamp(32px, 6vw, 80px);
+}
+
+.reading h1 {
+  max-width: 18ch;
+  margin: 14px 0;
+  font-size: clamp(36px, 6vw, 64px);
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.reading .lede {
+  max-width: 58ch;
+  font-size: clamp(16px, 2vw, 20px);
+  line-height: 1.55;
+}
+
+.reading .back-link, .reading a { color: #284f3b; text-underline-offset: 3px; }
+
+.guide-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 32px 0 56px;
+}
+
+.guide-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 190px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fffefa;
+  text-decoration: none;
+}
+
+.guide-card:hover { border-color: #748d70; background: #eff2e9; }
+.guide-card h2 { margin: 0; font-size: 21px; line-height: 1.25; }
+.guide-card p { margin: 0; line-height: 1.5; color: #586456; }
+.guide-card span { margin-top: auto; font-size: 13px; text-decoration: underline; }
+
+.guide-body { max-width: 68ch; font-size: 16px; line-height: 1.65; }
+.guide-body h2 { margin: 32px 0 8px; font-size: 23px; line-height: 1.25; }
+.guide-body h3 { margin: 20px 0 6px; font-size: 17px; }
+.guide-body p { margin: 0 0 14px; }
+.guide-body ul, .guide-body ol { padding-left: 1.4em; }
+.guide-body li { margin: 8px 0; }
+.guide-body section { margin-top: 26px; }
+
+.guide-note {
+  padding: 14px 18px;
+  margin: 22px 0;
+  border-left: 3px solid #748d70;
+  background: #e8eee3;
+}
+
+.reading .guide-cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 12px;
+  padding: 10px 18px;
+  border-radius: 8px;
+  background: var(--green);
+  color: #fff;
+  text-decoration: none;
+}
+
+@media (max-width: 760px) {
+  .guide-cards { grid-template-columns: 1fr; gap: 12px; margin-bottom: 28px; }
+  .guide-card { min-height: 0; padding: 19px; }
+}
+
+@media (max-width: 420px) {
+  .site-nav a, .site-nav button { font-size: 12px; }
+  .site-nav .quiet span { display: none; }
+}
