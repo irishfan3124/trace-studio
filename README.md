@@ -46,6 +46,12 @@ git branch -D pages-update
 
 If you cloned the repository from GitHub, use `origin` instead of `github` in these commands.
 
+## Commercial deployment
+
+GitHub Pages hosts the ad-free demo. For a commercial site, import this repository into [Cloudflare Pages](https://developers.cloudflare.com/pages/framework-guides/deploy-anything/). Use production branch `main`, build command `exit 0`, and output directory `dist`. Attach the domain in the Pages project’s [Custom domains](https://developers.cloudflare.com/pages/configuration/custom-domains/) settings and verify HTTPS before submitting the site for review.
+
+The drawing guides are separate HTML pages. If the domain is approved for [AdSense](https://support.google.com/adsense/answer/7584263), start with one manual placement on a tutorial page. Keep the camera workspace and navigation pages free of ad scripts, including Auto ads. Use the publisher details supplied by AdSense for domain verification and the root `ads.txt`. Update the privacy page and set up any required consent messaging before enabling ads. The repository currently has no publisher identifiers, ad tags, or analytics.
+
 ## Source and checks
 
 The complete app is in `dist/`, including the line drawing catalog in `dist/drawings.js`. `.openai/hosting.json` identifies the existing Sites deployment. Google Fonts are loaded for typography, and artwork processing stays in the browser.
